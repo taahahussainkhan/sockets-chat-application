@@ -32,6 +32,7 @@ export const signup = async (req, res) => {
                 _id: newUser._id,
                 fullName: newUser.fullName,
                 email: newUser.email,
+                createdAt: newUser.createdAt,
             });
         }
         else {
@@ -63,6 +64,7 @@ export const login = async (req, res) => {
             fullName: user.fullName,
             email: user.email,
             profilePicture: user.profilePicture,
+            createdAt: user.createdAt,
         })
     } catch (err) {
         console.log("Error in login controller", err.message);
@@ -100,7 +102,13 @@ export const updateProfile = async (req, res) => {
             profilePicture: uploadedResponse.secure_url,
         }, { new: true });
 
-
+        res.status(200).json({
+            _id: user._id,
+            fullName: user.fullName,
+            email: user.email,
+            profilePicture: user.profilePicture,
+            createdAt: user.createdAt,
+        })
     } catch (error) {
         console.log("Error in updateProfile controller", error.message);
         res.status(500).json({ message: error.message });
@@ -114,6 +122,7 @@ export const checkAuth = (req, res) => {
             fullName: req.user.fullName,
             email: req.user.email,
             profilePicture: req.user.profilePicture,
+            createdAt: req.user.createdAt,
         })
     } catch (error) {
         console.log("Error in checkAuth controller", error.message);

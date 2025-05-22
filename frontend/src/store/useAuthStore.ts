@@ -5,6 +5,9 @@ import toast from "react-hot-toast";
 interface User {
   id: string;
   email: string;
+  fullName: string;
+  profilePicture?: string;
+  createdAt?: string;
 }
 
 interface AuthStore {
@@ -17,7 +20,7 @@ interface AuthStore {
   signUp: (data: any) => Promise<void>;
   login: (data: any) => Promise<void>;
   logout: () => Promise<void>;
-  updateProfile: () => Promise<void>;
+  updateProfile: (data: any) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
@@ -82,5 +85,17 @@ export const useAuthStore = create<AuthStore>((set) => ({
       console.log(error);
     }
   },
-  updateProfile: async () => {},
+  updateProfile: async (data) => {
+    set({ isUpdatingProfile: true });
+    try {
+      const res = await axiosInstance.put("/auth/update-profile", data);
+      set({ authUser: res.data });
+      toast.success("Profile updated successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    } finally {
+      set({ isUpdatingProfile: false });
+    }
+  },
 }));

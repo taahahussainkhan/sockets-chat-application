@@ -26,7 +26,7 @@ const App = () => {
     );
 
   return (
-    <div className="">
+    <div >
       <Toaster position="top-center" />
       <Navbar />
       <Routes>
