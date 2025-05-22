@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuthStore } from "./store/useAuthStore.js";
 import { Loader } from "lucide-react";
+import { Toaster } from "react-hot-toast";
 
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -15,7 +16,7 @@ const App = () => {
 
   useEffect(() => {
     checkAuth();
-  }, [authUser]);
+  }, []);
 
   if (isCheckingAuth && !authUser)
     return (
@@ -24,10 +25,9 @@ const App = () => {
       </div>
     );
 
-  console.log(authUser);
-
   return (
     <div className="">
+      <Toaster position="top-center" />
       <Navbar />
       <Routes>
         <Route

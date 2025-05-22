@@ -1,4 +1,7 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore.js";
 import {
   Eye,
@@ -9,31 +12,43 @@ import {
   MessageSquare,
   User,
 } from "lucide-react";
-import { Link } from "react-router-dom";
-// import toast from "react-hot-toast";
+
+import AuthImagePattern from "../components/AuthImagePattern";
 
 const SignUp = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     confirmPassword: "",
     fullName: "",
-
   });
 
   const { signUp, isSigningUp } = useAuthStore();
 
   const validateForm = () => {
-    const { email, password, confirmPassword } = formData;
-    if (!email || !password || !confirmPassword) return false;
-    if (password !== confirmPassword) return false;
+    if (!formData.fullName.trim()) return toast.error("Full name is required");
+    if (!formData.email.trim()) return toast.error("Email is required");
+    if (!/\S+@\S+\.\S+/.test(formData.email))
+      return toast.error("Invalid email address");
+    if (!formData.password.trim()) return toast.error("Password is required");
+    if (formData.password.length < 8)
+      return toast.error("Password must be at least 8 characters long");
     return true;
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!validateForm()) return;
+    try {
+      await signUp(formData);
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+    }
   };
+
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* left side */}
@@ -156,10 +171,10 @@ const SignUp = () => {
 
       {/* right side */}
 
-      {/* <AuthImagePattern
+      <AuthImagePattern
         title="Join our community"
         subtitle="Connect with friends, share moments, and stay in touch with your loved ones."
-      /> */}
+      />
     </div>
   );
 };

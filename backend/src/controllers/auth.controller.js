@@ -11,13 +11,10 @@ export const signup = async (req, res) => {
         const { valid, message } = validateSignup({ fullName, email, password })
         if (!valid) return res.status(400).json({ message });
 
-
-
         const user = await User.findOne({ email });
         if (user) {
             return res.status(400).json({ message: "User already exists" });
         }
-
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
@@ -26,8 +23,6 @@ export const signup = async (req, res) => {
             email,
             password: hashedPassword,
         });
-
-
 
         if (newUser) {
             // genertae JWT 
