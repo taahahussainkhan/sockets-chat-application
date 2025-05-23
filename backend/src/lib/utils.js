@@ -26,3 +26,7 @@ export const validateSignup = ({ fullName, email, password }) => {
     const failed = validations.find((v) => !v.valid);
     return failed ? { valid: false, message: failed.message } : { valid: true }
 }
+
+export const generateOTP = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  };
