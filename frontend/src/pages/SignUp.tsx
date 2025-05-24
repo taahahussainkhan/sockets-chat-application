@@ -12,7 +12,7 @@ import {
   MessageSquare,
   User,
 } from "lucide-react";
-
+import OTPVerification from "./OTPVerification";
 import AuthImagePattern from "../components/AuthImagePattern";
 
 const SignUp = () => {
@@ -24,7 +24,7 @@ const SignUp = () => {
     confirmPassword: "",
     fullName: "",
   });
-
+  const [step, setStep] = useState("signup");
   const { signUp, isSigningUp } = useAuthStore();
 
   const validateForm = () => {
@@ -41,14 +41,31 @@ const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validateForm()) return;
-    try {
-      await signUp(formData);
-      navigate("/");
-    } catch (error) {
-      console.error(error);
+    // try {
+    //   await signUp(formData);
+    //   navigate("/");
+    // } catch (error) {
+    //   console.error(error);
+    // }
+
+    const success = await signUp(formData);
+    if (success) {
+      setStep("otp");
     }
   };
 
+
+  if (step === "otp") {
+    return (
+      <OTPVerification
+        email={formData.email}
+        onVerified={() => {
+          toast.success("Verification complete! Redirecting...");
+          navigate("/"); // or dashboard route
+        }}
+      />
+    );
+  }
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       {/* left side */}

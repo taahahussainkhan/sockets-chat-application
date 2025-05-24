@@ -6,6 +6,9 @@ interface User {
   id: string;
   email: string;
   fullName: string;
+  otp: string;
+  isVerified: Boolean;
+  
   profilePicture?: string;
   createdAt?: string;
 }
@@ -15,12 +18,15 @@ interface AuthStore {
   isSigningUp: boolean;
   isLoggingIn: boolean;
   isCheckingAuth: boolean;
+  isVerifyingOTP: boolean,
   isUpdatingProfile: boolean;
+  onlineUsers: [],
   checkAuth: () => Promise<void>;
-  signUp: (data: any) => Promise<void>;
+  signUp: (data: any) => Promise<boolean>;
   login: (data: any) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (data: any) => Promise<void>;
+  verifyOTP: (data: { email: string; otp: string }) => Promise<boolean>;
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
@@ -29,6 +35,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   isLoggingIn: false,
   isCheckingAuth: true,
   isUpdatingProfile: false,
+  isVerifyingOTP:false,
 
   checkAuth: async () => {
     try {
@@ -48,9 +55,10 @@ export const useAuthStore = create<AuthStore>((set) => ({
     set({ isSigningUp: true });
     try {
       const res = await axiosInstance.post("/auth/signup", data);
-      console.log("User create");
-      toast.success("Account created successfully");
-      set({ authUser: res.data });
+      toast.success("OTP sent to your email for verification")
+      // toast.success("Account created successfully");
+      // set({ authUser: res.data });
+      return true
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
@@ -58,6 +66,22 @@ export const useAuthStore = create<AuthStore>((set) => ({
       throw error;
     } finally {
       set({ isSigningUp: false });
+    }
+  },
+
+  verifyOTP: async({email, otp}: { email: string; otp: string }) => {
+    set({isVerifyingOTP: true});
+    try{
+      const res = await axiosInstance.post("/auth/verify-otp", {email, otp});
+      toast.success("Account verified successfully!")
+      set({authUser:res.data})
+      return true
+    } catch(error: any){
+      console.error("OTP verification error:", error);
+      toast.error(error.response?.data?.message || "OTP verification failed");
+      return false;
+    }finally {
+      set({ isVerifyingOTP: false });
     }
   },
 
